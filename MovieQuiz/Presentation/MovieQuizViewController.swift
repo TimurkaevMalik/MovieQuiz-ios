@@ -47,7 +47,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var currentQuestion: QuizQuestion?
     private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var alertPresenter: AlertPresenter = AlertPresenter()
-
+    private var statisticPresenter: StatisticServiceImplementation = StatisticServiceImplementation()
     
     private func resetImageBorederColor() {
         imageView.layer.masksToBounds = true
@@ -91,10 +91,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showAlertPresenter() {
+        statisticPresenter.store(correct: correctAnswers, total: questionsAmount)
         
-        let text = correctAnswers == questionsAmount ? "Поздравляем, вы ответили на 10 из 10!" : "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
+        guard let bestGame = statisticPresenter.gameRecord else {return}
+
         
-        let someVar = AlertModel(title: "Этот раунд окончен!", message: text, buttonText: "Сыграть ещё раз", comletion: { [weak self] in
+        let TotalGamesString = "количество сыгранных квизов: \(statisticPresenter.gamesCount)"
+        let bestGameString = "рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
+        let accuracyOfAnswers = "Средяя точность: \(String(format: "%.2f", statisticPresenter.totalAccuracy))%"
+        
+        let text = "Ваш результат \(correctAnswers)/\(questionsAmount)"
+        
+        let someVar = AlertModel(title: "Этот раунд окончен!", message: "\(text)\n\(TotalGamesString)\n\(bestGameString)\n\(accuracyOfAnswers)", buttonText: "Сыграть ещё раз", comletion: { [weak self] in
             guard let self = self else {return}
             
             self.currentQuestionIndex = 0
@@ -110,7 +118,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
-            
+
             showAlertPresenter()
             
         } else {
@@ -138,26 +146,26 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+//        let documentsURl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        
+//        let newFile2 = documentsURl.appendingPathComponent("top250MoviesIMDB.json")
+//        
+//        let top250Movies = try? string(from: newFile2)
+//        guard let top250Movies = top250Movies else {return}
+//        
+//        
+//        let data2 = top250Movies.data(using: .utf8)
+//        guard let data2 = data2 else {return}
         
-        let documentsURl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        do {
+//            let top250Movies1 = try JSONDecoder().decode(JsonFileDecoder.Top.self, from: data2)
+//            print(top250Movies1)
+//        } catch {
+//            print("error")
+//        }
         
-        let newFile2 = documentsURl.appendingPathComponent("top250MoviesIMDB.json")
-        
-        let top250Movies = try? string(from: newFile2)
-        guard let top250Movies = top250Movies else {return}
-        
-        
-        let data2 = top250Movies.data(using: .utf8)
-        guard let data2 = data2 else {return}
-        
-        do {
-            let top250Movies1 = try JSONDecoder().decode(JsonFileDecoder.Top.self, from: data2)
-            print(top250Movies1)
-        } catch {
-            print("error")
-        }
-        
-        
+//        statisticPresenter = StatisticServiceImplementation()
         questionFactory.delegate = self
         
         resetImageBorederColor()
