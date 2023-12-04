@@ -10,12 +10,12 @@ import Foundation
 
 class JsonFileDecoder {
     
-    private struct Actor: Codable {
-        let id: String
-        let image: String
-        let name: String
-        let asCharacter: String
-    }
+//    private struct Actor: Codable {
+//        let id: String
+//        let image: String
+//        let name: String
+//        let asCharacter: String
+//    }
     
     struct Movie: Codable {
         let id: String
@@ -33,7 +33,7 @@ class JsonFileDecoder {
         }
         
         init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let container: KeyedDecodingContainer = try decoder.container(keyedBy: CodingKeys.self)
             
             id = try container.decode(String.self, forKey: .id)
             rank = try container.decode(String.self, forKey: .rank)

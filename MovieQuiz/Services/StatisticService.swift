@@ -56,7 +56,8 @@ class StatisticServiceImplementation: StatisticService {
     var gameRecord: GameRecord? {
         get {
             guard let data = UserDefaults.standard.data(forKey: Keys.bestGame.rawValue),
-                  let gameRecord = try? JSONDecoder().decode(GameRecord.self, from: data) else {
+                  //print(data)
+                    let gameRecord = try? JSONDecoder().decode(GameRecord.self, from: data) else {
                 return .init(correct: 0, total: 0, date: Date())
             }
 

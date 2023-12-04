@@ -18,20 +18,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet var yesButtonClicked: UIButton!
     
     @IBAction func yesButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {return}
-        
-        let givenAnswer = true
-        
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        buttonClicked(givenAnswer: true)
     }
     
     @IBAction func noButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {return}
-        
-        let givenAnswer = false
-        
-        showAnswerResult(isCorrect: givenAnswer ==  currentQuestion.correctAnswer)
+        buttonClicked(givenAnswer: false)
     }
     
     
@@ -47,7 +38,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var currentQuestion: QuizQuestion?
     private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var alertPresenter: AlertPresenter = AlertPresenter()
-    private var statisticPresenter: StatisticServiceImplementation = StatisticServiceImplementation()
+    private var statisticPresenter: StatisticService = StatisticServiceImplementation()
     
     private func resetImageBorederColor() {
         imageView.layer.masksToBounds = true
@@ -143,6 +134,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     
+    private func buttonClicked(givenAnswer: Bool) {
+        guard let currentQuestion = currentQuestion else {return}
+        
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
