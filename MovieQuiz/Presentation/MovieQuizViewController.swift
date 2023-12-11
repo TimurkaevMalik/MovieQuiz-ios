@@ -6,6 +6,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Lifecycle
     
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet var imageView: UIImageView!
     
@@ -103,7 +104,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         
         alertPresenter.controller = self
-        alertPresenter.show2(quiz: someVar)
+        alertPresenter.show2(in: self, model: someVar)
         resetImageBorederColor()
     }
     
@@ -140,9 +141,60 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     
+    private func sendFirstRequest () {
+        guard let url = URL(string: "https://imdb-api.com/en/API/MostPopularTVs/k_zcuw1ytf") else {return}
+        var request = URLRequest(url: url)
+        /*
+        request.httpMethod = "GET"
+        request.httpBody = nil
+        request.allHTTPHeaderFields = ["TEST": "test"]
+        */
+        
+        var task: URLSessionDataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            // здесь мы обрабатываем ответ от сервера
+                   
+                   // data — данные от сервера
+                   // response — ответ от сервера, содержащий код ответа, хедеры и другую информацию об ответе
+                   // error — ошибка ответа, если что-то пошло не так
+        }
+        
+        task.resume()
+    }
+
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
+    }
+    
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        
+        let model = AlertModel(title: "Ошибка", message: message, buttonText: "Попробуйте ещё раз") { [weak self] in
+            guard let self = self else {return}
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            
+            self.questionFactory.requestNextQuestion()
+        }
+        
+        
+        alertPresenter.show2(in: self, model: model)
+        
+}
+        
+        
+    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+//        showLoadingIndicator()
         questionFactory.delegate = self
         
         resetImageBorederColor()
