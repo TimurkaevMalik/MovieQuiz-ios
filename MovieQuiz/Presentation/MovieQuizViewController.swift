@@ -3,7 +3,6 @@ import UIKit
 
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-    
     // MARK: - Lifecycle
     
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
@@ -37,7 +36,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionsAmount = 10
     
     private var currentQuestion: QuizQuestion?
-    private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory()
+    private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
     private var alertPresenter: AlertPresenter = AlertPresenter()
     private var statisticPresenter: StatisticService = StatisticServiceImplementation()
     
@@ -49,12 +48,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     
     private func convert (model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
         
-        return questionStep
+        return QuizStepViewModel(
+            image: UIImage(data: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
+        )
     }
     
     private func show(quiz step: QuizStepViewModel) {
@@ -141,26 +140,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     
-    private func sendFirstRequest () {
-        guard let url = URL(string: "https://imdb-api.com/en/API/MostPopularTVs/k_zcuw1ytf") else {return}
-        var request = URLRequest(url: url)
-        /*
-        request.httpMethod = "GET"
-        request.httpBody = nil
-        request.allHTTPHeaderFields = ["TEST": "test"]
-        */
-        
-        var task: URLSessionDataTask = URLSession.shared.dataTask(with: request) { data, response, error in
-            // здесь мы обрабатываем ответ от сервера
-                   
-                   // data — данные от сервера
-                   // response — ответ от сервера, содержащий код ответа, хедеры и другую информацию об ответе
-                   // error — ошибка ответа, если что-то пошло не так
-        }
-        
-        task.resume()
-    }
-
     private func showLoadingIndicator() {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
@@ -175,30 +154,35 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         hideLoadingIndicator()
         
         
-        let model = AlertModel(title: "Ошибка", message: message, buttonText: "Попробуйте ещё раз") { [weak self] in
-            guard let self = self else {return}
-            
-            self.currentQuestionIndex = 0
-            self.correctAnswers = 0
-            
-            self.questionFactory.requestNextQuestion()
-        }
+        let model = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробуйте ещё раз") { [weak self] in
+                
+                guard let self = self else {return}
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                
+                self.questionFactory.requestNextQuestion()
+            }
         
         
         alertPresenter.show2(in: self, model: model)
         
-}
-        
-        
+    }
     
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        showLoadingIndicator()
+        
         questionFactory.delegate = self
         
+        showLoadingIndicator()
         resetImageBorederColor()
-        questionFactory.requestNextQuestion()
+        
+        questionFactory.loadData()
+        
     }
     
     
@@ -216,6 +200,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        questionFactory.requestNextQuestion()
+        activityIndicator.isHidden = true
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
     }
 }
 
