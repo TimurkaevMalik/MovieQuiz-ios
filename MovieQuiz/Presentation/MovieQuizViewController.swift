@@ -164,6 +164,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
                 
+                self.showLoadingIndicator()
+                self.questionFactory.loadData()
                 self.questionFactory.requestNextQuestion()
             }
         
@@ -208,6 +210,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     func didFailToLoadData(with error: Error) {
+        alertPresenter.controller = self
         showNetworkError(message: error.localizedDescription)
     }
 }
