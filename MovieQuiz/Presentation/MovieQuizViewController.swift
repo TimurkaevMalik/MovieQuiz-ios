@@ -103,7 +103,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         
         alertPresenter.controller = self
-        alertPresenter.show2(in: self, model: someVar)
+        alertPresenter.show(in: self, model: someVar)
         resetImageBorederColor()
     }
     
@@ -170,7 +170,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             }
         
         
-        alertPresenter.show2(in: self, model: model)
+        alertPresenter.show(in: self, model: model)
         
     }
     
