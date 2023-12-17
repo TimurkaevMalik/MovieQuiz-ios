@@ -45,14 +45,15 @@
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Deadpool" translatesAutoresizingMaskIntoConstraints="NO" id="K4I-Mk-TF3" userLabel="Preview Image">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="K4I-Mk-TF3" userLabel="Preview Image">
                                         <rect key="frame" x="0.0" y="43.5" width="374" height="561"/>
-                                        <color key="backgroundColor" name="YP White"/>
+                                        <color key="backgroundColor" name="YP Black"/>
+                                        <color key="tintColor" name="YP Black"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="K4I-Mk-TF3" secondAttribute="height" multiplier="2:3" id="kMo-LR-HZD"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Рейтинг этого фильма меньше чем 5?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8zD-0u-RCP" userLabel="Question Label">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8zD-0u-RCP" userLabel="Question Label">
                                         <rect key="frame" x="0.0" y="624.5" width="374" height="99.5"/>
                                         <fontDescription key="fontDescription" name="YSDisplay-Bold" family="YS Display" pointSize="23"/>
                                         <color key="textColor" name="YP White"/>
@@ -113,6 +114,10 @@
                                     <constraint firstAttribute="trailing" secondItem="6FA-d6-3ZI" secondAttribute="trailing" id="zwh-Qz-KWC"/>
                                 </constraints>
                             </stackView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="Or5-t9-aC6">
+                                <rect key="frame" x="188.5" y="429.5" width="37" height="37"/>
+                                <color key="color" name="YP White"/>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black"/>
@@ -121,9 +126,12 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="HWW-qw-90e" secondAttribute="bottom" id="XE5-m8-w4w"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="HWW-qw-90e" secondAttribute="trailing" constant="20" id="Y5s-ds-Bb5"/>
                             <constraint firstItem="HWW-qw-90e" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="ahT-7L-1mX"/>
+                            <constraint firstItem="Or5-t9-aC6" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hIQ-tF-dbn"/>
+                            <constraint firstItem="Or5-t9-aC6" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="o9h-tN-ACC"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="Or5-t9-aC6" id="Hdo-nd-yX8"/>
                         <outlet property="counterLabel" destination="MzS-9t-sbP" id="XIO-J8-t2D"/>
                         <outlet property="imageView" destination="K4I-Mk-TF3" id="sdI-QS-kFj"/>
                         <outlet property="noButtonClicked" destination="QEF-eh-cFx" id="Zod-h9-sKK"/>
@@ -137,7 +145,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Deadpool" width="2000" height="3000"/>
         <namedColor name="YP Black">
             <color red="0.10199999809265137" green="0.10599999874830246" blue="0.13300000131130219" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -3,9 +3,9 @@ import UIKit
 
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-    
     // MARK: - Lifecycle
     
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet var imageView: UIImageView!
     
@@ -36,7 +36,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionsAmount = 10
     
     private var currentQuestion: QuizQuestion?
-    private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory()
+    private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
     private var alertPresenter: AlertPresenter = AlertPresenter()
     private var statisticPresenter: StatisticService = StatisticServiceImplementation()
     
@@ -48,12 +48,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     
     private func convert (model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
         
-        return questionStep
+        return QuizStepViewModel(
+            image: UIImage(data: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
+        )
     }
     
     private func show(quiz step: QuizStepViewModel) {
@@ -103,7 +103,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         
         
         alertPresenter.controller = self
-        alertPresenter.show2(quiz: someVar)
+        alertPresenter.show2(in: self, model: someVar)
         resetImageBorederColor()
     }
     
@@ -140,13 +140,51 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
+    }
+    
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        
+        let model = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробуйте ещё раз") { [weak self] in
+                
+                guard let self = self else {return}
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                
+                self.showLoadingIndicator()
+                self.questionFactory.loadData()
+                self.questionFactory.requestNextQuestion()
+            }
+        
+        
+        alertPresenter.show2(in: self, model: model)
+        
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         questionFactory.delegate = self
         
+        showLoadingIndicator()
         resetImageBorederColor()
-        questionFactory.requestNextQuestion()
+        
+        questionFactory.loadData()
+        
     }
     
     
@@ -164,6 +202,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        questionFactory.requestNextQuestion()
+        activityIndicator.isHidden = true
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        alertPresenter.controller = self
+        showNetworkError(message: error.localizedDescription)
     }
 }
 
