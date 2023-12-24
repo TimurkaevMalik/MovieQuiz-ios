@@ -3,18 +3,13 @@ import UIKit
 
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+    
     // MARK: - Lifecycle
-    
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
-    
     @IBOutlet var imageView: UIImageView!
-    
     @IBOutlet var textLabel: UILabel!
-    
     @IBOutlet var counterLabel: UILabel!
-    
     @IBOutlet var noButtonClicked: UIButton!
-    
     @IBOutlet var yesButtonClicked: UIButton!
     
     @IBAction func yesButtonClicked(_ sender: UIButton) {
@@ -31,14 +26,14 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     
-    private var currentQuestionIndex = 0
     private var correctAnswers = 0
-    private var questionsAmount = 10
     
+    private let presenter = MovieQuizPresenter()
     private var currentQuestion: QuizQuestion?
     private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
     private var alertPresenter: AlertPresenter = AlertPresenter()
     private var statisticPresenter: StatisticService = StatisticServiceImplementation()
+    
     
     private func resetImageBorederColor() {
         imageView.layer.masksToBounds = true
@@ -46,15 +41,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
     }
     
-    
-    private func convert (model: QuizQuestion) -> QuizStepViewModel {
-        
-        return QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
-        )
-    }
     
     private func show(quiz step: QuizStepViewModel) {
         imageView.image = step.image
@@ -82,7 +68,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showAlertPresenter() {
-        statisticPresenter.store(correct: correctAnswers, total: questionsAmount)
+        statisticPresenter.store(correct: correctAnswers, total: presenter.questionsAmount)
         
         guard let bestGame = statisticPresenter.gameRecord else {return}
         
@@ -91,12 +77,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let bestGameString = "рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
         let accuracyOfAnswers = "Средяя точность: \(String(format: "%.2f", statisticPresenter.totalAccuracy))%"
         
-        let text = "Ваш результат \(correctAnswers)/\(questionsAmount)"
+        let text = "Ваш результат \(correctAnswers)/\(presenter.questionsAmount)"
         
         let someVar = AlertModel(title: "Этот раунд окончен!", message: "\(text)\n\(TotalGamesString)\n\(bestGameString)\n\(accuracyOfAnswers)", buttonText: "Сыграть ещё раз", comletion: { [weak self] in
             guard let self = self else {return}
             
-            self.currentQuestionIndex = 0
+            self.presenter.resetQuestionIndex()
             self.correctAnswers = 0
             self.questionFactory.requestNextQuestion()
         })
@@ -108,18 +94,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        
+        if presenter.isLastQuestion() {
             
             showAlertPresenter()
             
         } else {
             
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             questionFactory.requestNextQuestion()
         }
-        
-        noButtonClicked.isEnabled = true
-        yesButtonClicked.isEnabled = true
     }
     
     
@@ -161,7 +145,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                 
                 guard let self = self else {return}
                 
-                self.currentQuestionIndex = 0
+                self.presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 
                 self.showLoadingIndicator()
@@ -194,11 +178,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         guard let question = question else {
             return
         }
+        noButtonClicked.isEnabled = true
+        yesButtonClicked.isEnabled = true
         
         resetImageBorederColor()
         
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
