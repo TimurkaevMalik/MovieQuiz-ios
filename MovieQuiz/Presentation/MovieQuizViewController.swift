@@ -13,11 +13,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet var yesButtonClicked: UIButton!
     
     @IBAction func yesButtonClicked(_ sender: UIButton) {
-        buttonClicked(givenAnswer: true)
+        presenter.currentQuestion = currentQuestion
+        presenter.yesButtonClicked()
     }
     
     @IBAction func noButtonClicked(_ sender: UIButton) {
-        buttonClicked(givenAnswer: false)
+        presenter.currentQuestion = currentQuestion
+        presenter.noButtonClicked()
     }
     
     
@@ -27,9 +29,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     
     private var correctAnswers = 0
+    private var currentQuestion: QuizQuestion?
     
     private let presenter = MovieQuizPresenter()
-    private var currentQuestion: QuizQuestion?
     private lazy var questionFactory: QuestionFactoryProtocol = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
     private var alertPresenter: AlertPresenter = AlertPresenter()
     private var statisticPresenter: StatisticService = StatisticServiceImplementation()
@@ -48,7 +50,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         counterLabel.text = step.questionNumber
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
@@ -117,12 +119,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         return try String(contentsOf: documentsURL)
     }
     
-    private func buttonClicked(givenAnswer: Bool) {
-        guard let currentQuestion = currentQuestion else {return}
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-    }
-    
     
     private func showLoadingIndicator() {
         activityIndicator.isHidden = false
@@ -161,6 +157,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        presenter.viewController = self
         
         questionFactory.delegate = self
         
