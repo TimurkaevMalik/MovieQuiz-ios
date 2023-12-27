@@ -39,7 +39,10 @@
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="1/10" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MzS-9t-sbP" userLabel="Index Label">
                                                 <rect key="frame" x="338" y="0.0" width="36" height="23.5"/>
-                                                <accessibility key="accessibilityConfiguration" label="Index"/>
+                                                <accessibility key="accessibilityConfiguration" identifier="Index Label">
+                                                    <accessibilityTraits key="traits" staticText="YES"/>
+                                                    <bool key="isElement" value="YES"/>
+                                                </accessibility>
                                                 <fontDescription key="fontDescription" name="YSDisplay-Medium" family="YS Display" pointSize="20"/>
                                                 <color key="textColor" name="YP White"/>
                                                 <nil key="highlightedColor"/>

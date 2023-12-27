@@ -2,7 +2,7 @@ import UIKit
 
 
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     
     // MARK: - Lifecycle
     @IBOutlet private var activityIndicator: UIActivityIndicatorView!
@@ -53,7 +53,6 @@ final class MovieQuizViewController: UIViewController {
     }
     
     
-    // MARK: - More Coplicated Functions
     func highlightImageBorder(isCorrectAnswer: Bool) {
         areButtonsEnable(bool: false)
         

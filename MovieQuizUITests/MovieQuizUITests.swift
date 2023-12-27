@@ -32,6 +32,24 @@ final class MovieQuizUITests: XCTestCase {
         
     }
     
+    func testYesButton() {
+        sleep(3)
+        
+        let firstPoster = app.images["Poster"]
+        let firstPosterData = firstPoster.screenshot().pngRepresentation
+        
+        app.buttons["Yes"].tap()
+        sleep(3)
+        
+        let secondPoster = app.images["Poster"]
+        let secondPosterData = secondPoster.screenshot().pngRepresentation
+
+        let indexLabel = app.staticTexts["Index Label"]
+       
+        XCTAssertNotEqual(firstPosterData, secondPosterData)
+        XCTAssertEqual(indexLabel.label, "2/10")
+    }
+    
     func testNoButton() {
         sleep(3)
         
@@ -44,10 +62,10 @@ final class MovieQuizUITests: XCTestCase {
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
 
-        let indexLabel = app.staticTexts["Index"]
+        let indexLabel = app.staticTexts["Index Label"]
        
         XCTAssertNotEqual(firstPosterData, secondPosterData)
-        XCTAssertNotEqual(indexLabel.label, "2/10")
+        XCTAssertEqual(indexLabel.label, "2/10")
     }
     
     func testGameFinish() {
@@ -68,20 +86,25 @@ final class MovieQuizUITests: XCTestCase {
     
     func testAlertDismiss() {
         sleep(2)
-        for _ in 1...10 {
+        for _ in 1...9 {
             app.buttons["No"].tap()
             sleep(2)
         }
+        let indexLabel = app.staticTexts["Index Label"]
+        
+        XCTAssertTrue(indexLabel.label == "10/10")
+        sleep(1)
+        
+        app.buttons["No"].tap()
+        sleep(2)
         
         let alert = app.alerts["Этот раунд окончен!"]
-        let alertButton = app.alerts["Этот раунд окончен!"].scrollViews.otherElements.buttons["Сыграть ещё раз"]
+        
         alert.buttons.firstMatch.tap()
         
         sleep(2)
-        
-        let indexLabel = app.staticTexts["Index"]
-        
+        print("\(indexLabel)🚫")
         XCTAssertFalse(alert.exists)
-        XCTAssertFalse(indexLabel.label == "1/10")
+        XCTAssertTrue(indexLabel.label == "1/10")
     }
 }

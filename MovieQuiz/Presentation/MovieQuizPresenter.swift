@@ -18,8 +18,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private weak var viewController: MovieQuizViewController?
     private var questionFactory: QuestionFactoryProtocol?
     
-    init(viewController: MovieQuizViewController) {
-        self.viewController = viewController
+    init(viewController: MovieQuizViewControllerProtocol) { 
+        self.viewController = viewController as? MovieQuizViewController
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
@@ -39,7 +39,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         buttonClicked(givenAnswer: false)
     }
     
-    func didAnswer(isCorrectAnswer: Bool) {
+    private func didAnswer(isCorrectAnswer: Bool) {
         if isCorrectAnswer {
             correctAnswers += 1
         }
@@ -51,7 +51,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         questionFactory?.requestNextQuestion()
     }
     
-    func switchToNextQuestion() {
+    private func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
     
@@ -101,8 +101,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         guard let bestGame = statisticPresenter.gameRecord else {return "nil"}
         
         let text = "Ваш результат \(correctAnswers)/\(questionsAmount)"
-        let totalGamesString = "количество сыгранных квизов: \(statisticPresenter.gamesCount)"
-        let bestGameString = "рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
+        let totalGamesString = "Количество сыгранных квизов: \(statisticPresenter.gamesCount)"
+        let bestGameString = "Рекорд: \(bestGame.correct)/\(bestGame.total) (\(bestGame.date.dateTimeString))"
         let accuracyOfAnswers = "Средяя точность: \(String(format: "%.2f", statisticPresenter.totalAccuracy))%"
         
         let statisticAlert = [text, totalGamesString, bestGameString, accuracyOfAnswers].joined(separator: "\n")
