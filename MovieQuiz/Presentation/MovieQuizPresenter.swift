@@ -18,7 +18,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private weak var viewController: MovieQuizViewController?
     private var questionFactory: QuestionFactoryProtocol?
     
-    init(viewController: MovieQuizViewControllerProtocol) { 
+    init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController as? MovieQuizViewController
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
@@ -31,12 +31,8 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         currentQuestionIndex == questionsAmount - 1
     }
     
-    func yesButtonClicked() {
-        buttonClicked(givenAnswer: true)
-    }
-    
-    func noButtonClicked() {
-        buttonClicked(givenAnswer: false)
+    private func switchToNextQuestion() {
+        currentQuestionIndex += 1
     }
     
     private func didAnswer(isCorrectAnswer: Bool) {
@@ -45,15 +41,20 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
+    func yesButtonClicked() {
+        buttonClicked(givenAnswer: true)
+    }
+    
+    func noButtonClicked() {
+        buttonClicked(givenAnswer: false)
+    }
+    
     func restartGame() {
         correctAnswers = 0
         currentQuestionIndex = 0
         questionFactory?.requestNextQuestion()
     }
     
-    private func switchToNextQuestion() {
-        currentQuestionIndex += 1
-    }
     
     // MARK: - More Coplicated Functions
     private func buttonClicked(givenAnswer: Bool) {
@@ -62,24 +63,16 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         proceedWithAnswer(isCorrect: givenAnswer ==   currentQuestion.correctAnswer)
     }
     
-    func convert (model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
-        )
-    }
-    
     private func proceedWithAnswer(isCorrect: Bool) {
-            didAnswer(isCorrectAnswer: isCorrect)
-            
-            viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-                guard let self = self else { return }
-                self.proceedToNextQuestionOrResults()
-            }
+        didAnswer(isCorrectAnswer: isCorrect)
+        
+        viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            self.proceedToNextQuestionOrResults()
         }
+    }
     
     private func proceedToNextQuestionOrResults() {
         if self.isLastQuestion() {
@@ -93,6 +86,14 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
+    
+    func convert (model: QuizQuestion) -> QuizStepViewModel {
+        return QuizStepViewModel(
+            image: UIImage(data: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)"
+        )
+    }
     
     func statisticAlertStrings() -> String {
         
@@ -114,7 +115,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
-    
+        
         viewController?.areButtonsEnable(bool: true)
         viewController?.unshowImageBorederColor()
         
