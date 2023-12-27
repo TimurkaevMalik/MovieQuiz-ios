@@ -59,10 +59,10 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private func buttonClicked(givenAnswer: Bool) {
         guard let currentQuestion = currentQuestion else {return}
         
-        viewController?.showAnswerResult(isCorrect: givenAnswer ==   currentQuestion.correctAnswer)
+        proceedWithAnswer(isCorrect: givenAnswer ==   currentQuestion.correctAnswer)
     }
     
-    private func convert (model: QuizQuestion) -> QuizStepViewModel {
+    func convert (model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
@@ -70,7 +70,18 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         )
     }
     
-    func showNextQuestionOrResults() {
+    private func proceedWithAnswer(isCorrect: Bool) {
+            didAnswer(isCorrectAnswer: isCorrect)
+            
+            viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                guard let self = self else { return }
+                self.proceedToNextQuestionOrResults()
+            }
+        }
+    
+    private func proceedToNextQuestionOrResults() {
         if self.isLastQuestion() {
             
             viewController?.showAlertPresenter()
@@ -103,11 +114,9 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {return}
-        
-        viewController?.noButtonClicked.isEnabled = true
-        viewController?.yesButtonClicked.isEnabled = true
+    
+        viewController?.areButtonsEnable(bool: true)
         viewController?.unshowImageBorederColor()
-        
         
         currentQuestion = question
         let viewModel = convert(model: question)
@@ -118,7 +127,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     func didLoadDataFromServer() {
         questionFactory?.requestNextQuestion()
-        viewController?.activityIndicator.isHidden = true
+        viewController?.hideLoadingIndicator()
     }
     
     func didFailToLoadData(with error: Error) {

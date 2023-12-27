@@ -5,18 +5,18 @@ import UIKit
 final class MovieQuizViewController: UIViewController {
     
     // MARK: - Lifecycle
-    @IBOutlet var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet var imageView: UIImageView!
-    @IBOutlet var textLabel: UILabel!
-    @IBOutlet var counterLabel: UILabel!
-    @IBOutlet var noButtonClicked: UIButton!
-    @IBOutlet var yesButtonClicked: UIButton!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet private var textLabel: UILabel!
+    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var noButtonClicked: UIButton!
+    @IBOutlet private var yesButtonClicked: UIButton!
     
-    @IBAction func yesButtonClicked(_ sender: UIButton) {
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
         presenter.yesButtonClicked()
     }
     
-    @IBAction func noButtonClicked(_ sender: UIButton) {
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
         presenter.noButtonClicked()
     }
     
@@ -31,9 +31,13 @@ final class MovieQuizViewController: UIViewController {
         activityIndicator.startAnimating()
     }
     
-    private func hideLoadingIndicator() {
+    func hideLoadingIndicator() {
         activityIndicator.isHidden = true
-        activityIndicator.stopAnimating()
+    }
+    
+    func areButtonsEnable(bool: Bool) {
+        noButtonClicked.isEnabled = bool
+        yesButtonClicked.isEnabled = bool
     }
     
     func unshowImageBorederColor() {
@@ -50,21 +54,12 @@ final class MovieQuizViewController: UIViewController {
     
     
     // MARK: - More Coplicated Functions
-    func showAnswerResult(isCorrect: Bool) {
-        noButtonClicked.isEnabled = false
-        yesButtonClicked.isEnabled = false
+    func highlightImageBorder(isCorrectAnswer: Bool) {
+        areButtonsEnable(bool: false)
         
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        
-        presenter.didAnswer(isCorrectAnswer: isCorrect)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else {return}
-            
-            self.presenter.showNextQuestionOrResults()
-        }
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
     }
     
     
@@ -107,7 +102,7 @@ final class MovieQuizViewController: UIViewController {
     //MARK: - Override Funcs
     override func viewDidLoad() {
         super.viewDidLoad()
-        showLoadingIndicator()
+        imageView.layer.cornerRadius = 20
         presenter = MovieQuizPresenter(viewController: self)
     }
 }
