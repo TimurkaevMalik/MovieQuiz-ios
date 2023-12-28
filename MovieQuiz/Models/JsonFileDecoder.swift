@@ -53,11 +53,6 @@ final class JsonFileDecoder {
         let items: [Movie]
     }
     
-}
-
-enum FileManagerError: Error {
-    case fileDoesntExist
-    
     
     func string(from documentsURL: URL) throws -> String {
         
@@ -68,5 +63,8 @@ enum FileManagerError: Error {
         
         return try String(contentsOf: documentsURL)
     }
-    
+}
+
+enum FileManagerError: Error {
+    case fileDoesntExist
 }
