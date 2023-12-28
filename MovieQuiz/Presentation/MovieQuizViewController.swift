@@ -25,7 +25,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     var alertPresenter: AlertPresenter = AlertPresenter()
     
     
-    // MARK: - Simmple Functions
+    // MARK: - Public Methods
     func showLoadingIndicator() {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
@@ -98,7 +98,7 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     }
     
     
-    //MARK: - Override Funcs
+    //MARK: - Override Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.layer.cornerRadius = 20

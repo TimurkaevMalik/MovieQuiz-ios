@@ -26,7 +26,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         viewController.showLoadingIndicator()
     }
     
-    // MARK: - Simmple Functions
+    // MARK: - Private Methods
     private func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
@@ -40,23 +40,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             correctAnswers += 1
         }
     }
-    
-    func yesButtonClicked() {
-        buttonClicked(givenAnswer: true)
-    }
-    
-    func noButtonClicked() {
-        buttonClicked(givenAnswer: false)
-    }
-    
-    func restartGame() {
-        correctAnswers = 0
-        currentQuestionIndex = 0
-        questionFactory?.requestNextQuestion()
-    }
-    
-    
-    // MARK: - More Coplicated Functions
+        
     private func buttonClicked(givenAnswer: Bool) {
         guard let currentQuestion = currentQuestion else {return}
         
@@ -86,6 +70,21 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
+    
+    // MARK: - Public Methods
+    func yesButtonClicked() {
+        buttonClicked(givenAnswer: true)
+    }
+    
+    func noButtonClicked() {
+        buttonClicked(givenAnswer: false)
+    }
+    
+    func restartGame() {
+        correctAnswers = 0
+        currentQuestionIndex = 0
+        questionFactory?.requestNextQuestion()
+    }
     
     func convert (model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
