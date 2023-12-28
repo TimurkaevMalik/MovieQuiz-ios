@@ -11,7 +11,7 @@ import UIKit
 final class AlertPresenter {
     public weak var controller: MovieQuizViewController?
     
-    func show2(in: MovieQuizViewController, model result: AlertModel) {
+    func show(in: MovieQuizViewController, model result: AlertModel) {
 
         
         let alert = UIAlertController(

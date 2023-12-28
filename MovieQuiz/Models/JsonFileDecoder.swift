@@ -54,3 +54,17 @@ class JsonFileDecoder {
     }
     
 }
+
+enum FileManagerError: Error {
+    case fileDoesntExist
+}
+
+func string(from documentsURL: URL) throws -> String {
+    
+    if !FileManager.default.fileExists(atPath: documentsURL.path) {
+        
+        throw FileManagerError.fileDoesntExist
+    }
+    
+    return try String(contentsOf: documentsURL)
+}

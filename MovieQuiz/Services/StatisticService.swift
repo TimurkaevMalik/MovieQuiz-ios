@@ -12,7 +12,7 @@ import Foundation
 protocol StatisticService {
     var totalAccuracy: Double {get}
     var gamesCount: Int {get set}
-    var gameRecord: GameRecord? {get set} 
+    var gameRecord: GameRecord? {get set}
     
     func store(correct: Int,total: Int)
 }
@@ -84,6 +84,7 @@ class StatisticServiceImplementation: StatisticService {
         
         let currentGame = GameRecord(correct: correct, total: total, date: Date())
         
+        let previousBestGame = gameRecord
         if let previousBestGame = gameRecord {
             if currentGame > previousBestGame {
                 gameRecord = currentGame
