@@ -18,7 +18,7 @@ protocol StatisticService {
 }
 
 
-class StatisticServiceImplementation: StatisticService {
+final class StatisticServiceImplementation: StatisticService {
     
     
     private enum Keys: String {

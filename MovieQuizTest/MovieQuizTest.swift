@@ -29,8 +29,8 @@ struct ArithmeticOperations {
 }
 
 
-class MovieQuizTest: XCTestCase {
-    
+final class MovieQuizTest: XCTestCase {
+
     func testAddition() throws {
         let arithmeticalOperations = ArithmeticOperations()
         let num1 = 1

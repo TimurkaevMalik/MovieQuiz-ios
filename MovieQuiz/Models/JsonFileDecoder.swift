@@ -8,7 +8,7 @@
 import Foundation
 
 
-class JsonFileDecoder {
+final class JsonFileDecoder {
     
     private struct Actor: Codable {
         let id: String
@@ -53,18 +53,18 @@ class JsonFileDecoder {
         let items: [Movie]
     }
     
+    
+    func string(from documentsURL: URL) throws -> String {
+        
+        if !FileManager.default.fileExists(atPath: documentsURL.path) {
+            
+            throw FileManagerError.fileDoesntExist
+        }
+        
+        return try String(contentsOf: documentsURL)
+    }
 }
 
 enum FileManagerError: Error {
     case fileDoesntExist
-}
-
-func string(from documentsURL: URL) throws -> String {
-    
-    if !FileManager.default.fileExists(atPath: documentsURL.path) {
-        
-        throw FileManagerError.fileDoesntExist
-    }
-    
-    return try String(contentsOf: documentsURL)
 }
