@@ -84,7 +84,7 @@ final class StatisticServiceImplementation: StatisticService {
         
         let currentGame = GameRecord(correct: correct, total: total, date: Date())
         
-        let previousBestGame = gameRecord
+        
         if let previousBestGame = gameRecord {
             if currentGame > previousBestGame {
                 gameRecord = currentGame
